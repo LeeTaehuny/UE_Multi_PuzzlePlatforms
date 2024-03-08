@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "MovingPlatforms.generated.h"
+#include "PlatformTrigger.generated.h"
 
 UCLASS()
-class PUZZLEPLATFORMS_API AMovingPlatforms : public AActor
+class PUZZLEPLATFORMS_API APlatformTrigger : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AMovingPlatforms();
+	APlatformTrigger();
 
 protected:
 	// Called when the game starts or when spawned
@@ -24,12 +24,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Option", meta = (AllowPrivateAccess = "true"))
-	int32 Speed;
+	UPROPERTY(VisibleAnywhere, Category = "Collision", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* BoxComponent;
 
-	UPROPERTY(EditAnywhere, Category = "Option", meta = (AllowPrivateAccess = "true"), meta = (MakeEditWidget = true))
-	FVector TargetLocation;
-
-	FVector GlobalTargetLocation;
-	FVector GlobalStartLocation;
 };

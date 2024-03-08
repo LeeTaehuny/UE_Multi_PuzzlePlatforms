@@ -24,6 +24,10 @@ void AMovingPlatforms::BeginPlay()
 		// 현재 액터의 움직임을 서버에 복제하겠다는 의미
 		SetReplicateMovement(true);
 	}
+
+	// 시작 지점과 목표 지점 설정
+	GlobalStartLocation = GetActorLocation();
+	GlobalTargetLocation = GetTransform().TransformPosition(TargetLocation);
 }
 
 // Called every frame
@@ -34,7 +38,17 @@ void AMovingPlatforms::Tick(float DeltaTime)
 	if (HasAuthority())
 	{
 		FVector Location = GetActorLocation();
-		Location += FVector(Speed * DeltaTime, 0, 0);
+
+		if ((Location - GlobalStartLocation).Size() > (GlobalTargetLocation - GlobalStartLocation).Size())
+		{
+			FVector Temp = GlobalTargetLocation;
+			GlobalTargetLocation = GlobalStartLocation;
+			GlobalStartLocation = Temp;
+		}
+
+		FVector Direction = (GlobalTargetLocation - GlobalStartLocation).GetSafeNormal();
+
+		Location += Direction * Speed * DeltaTime;
 		SetActorLocation(Location);
 	}
 	
