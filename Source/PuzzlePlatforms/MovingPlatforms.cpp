@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "MovingPlatforms.h"
@@ -16,16 +16,16 @@ void AMovingPlatforms::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ¼­¹ö¿¡ ÀÖ´Â °æ¿ì
+	// ì„œë²„ì— ìžˆëŠ” ê²½ìš°
 	if (HasAuthority())
 	{
-		// ÇöÀç ¾×ÅÍ¸¦ ¼­¹ö¿¡ º¹Á¦ÇÏ°Ú´Ù´Â ÀÇ¹Ì
+		// í˜„ìž¬ ì•¡í„°ë¥¼ ì„œë²„ì— ë³µì œí•˜ê² ë‹¤ëŠ” ì˜ë¯¸
 		SetReplicates(true);
-		// ÇöÀç ¾×ÅÍÀÇ ¿òÁ÷ÀÓÀ» ¼­¹ö¿¡ º¹Á¦ÇÏ°Ú´Ù´Â ÀÇ¹Ì
+		// í˜„ìž¬ ì•¡í„°ì˜ ì›€ì§ìž„ì„ ì„œë²„ì— ë³µì œí•˜ê² ë‹¤ëŠ” ì˜ë¯¸
 		SetReplicateMovement(true);
 	}
 
-	// ½ÃÀÛ ÁöÁ¡°ú ¸ñÇ¥ ÁöÁ¡ ¼³Á¤
+	// ì‹œìž‘ ì§€ì ê³¼ ëª©í‘œ ì§€ì  ì„¤ì •
 	GlobalStartLocation = GetActorLocation();
 	GlobalTargetLocation = GetTransform().TransformPosition(TargetLocation);
 }
@@ -35,22 +35,38 @@ void AMovingPlatforms::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (HasAuthority())
+	// í”Œëž«í¼ íŠ¸ë¦¬ê±°ê°€ í™œì„±í™” ë˜ì—ˆì„ ê²½ìš°ì—ë§Œ ë¡œì§ ì¶”ê°€
+	if (ActiveTriggers > 0)
 	{
-		FVector Location = GetActorLocation();
-
-		if ((Location - GlobalStartLocation).Size() > (GlobalTargetLocation - GlobalStartLocation).Size())
+		if (HasAuthority())
 		{
-			FVector Temp = GlobalTargetLocation;
-			GlobalTargetLocation = GlobalStartLocation;
-			GlobalStartLocation = Temp;
+			FVector Location = GetActorLocation();
+
+			if ((Location - GlobalStartLocation).Size() > (GlobalTargetLocation - GlobalStartLocation).Size())
+			{
+				FVector Temp = GlobalTargetLocation;
+				GlobalTargetLocation = GlobalStartLocation;
+				GlobalStartLocation = Temp;
+			}
+
+			FVector Direction = (GlobalTargetLocation - GlobalStartLocation).GetSafeNormal();
+
+			Location += Direction * Speed * DeltaTime;
+			SetActorLocation(Location);
 		}
-
-		FVector Direction = (GlobalTargetLocation - GlobalStartLocation).GetSafeNormal();
-
-		Location += Direction * Speed * DeltaTime;
-		SetActorLocation(Location);
 	}
-	
+}
+
+void AMovingPlatforms::AddActiveTrigger()
+{
+	ActiveTriggers++;
+}
+
+void AMovingPlatforms::RemoveActiveTrigger()
+{
+	if (ActiveTriggers > 0)
+	{
+		ActiveTriggers--;
+	}
 }
 

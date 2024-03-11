@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -23,6 +23,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	void AddActiveTrigger();
+	void RemoveActiveTrigger();
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Option", meta = (AllowPrivateAccess = "true"))
 	int32 Speed;
@@ -32,4 +36,8 @@ private:
 
 	FVector GlobalTargetLocation;
 	FVector GlobalStartLocation;
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Trigger", meta = (AllowPrivateAccess = "true"))
+	int32 ActiveTriggers = 1;
 };
