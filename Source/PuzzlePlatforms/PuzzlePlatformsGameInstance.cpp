@@ -5,14 +5,53 @@
 
 #include "Engine/Engine.h"
 
+#include "PlatformTrigger.h"
+#include "Blueprint/UserWidget.h"
+
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Start Construct"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> MenuBPClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/MenuSystem/WBP_MainMenu.WBP_MainMenu_C'"));
+	
+	if (MenuBPClass.Class != NULL)
+	{
+		MenuClass = MenuBPClass.Class;
+	}
+	
 }
 
 void UPuzzlePlatformsGameInstance::Init()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Start Init"));
+	if (MenuClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found Class %s"), *MenuClass->GetName());
+	}
+	
+}
+
+void UPuzzlePlatformsGameInstance::LoadMenu()
+{
+	if (!MenuClass) return;
+
+	UUserWidget* Menu = CreateWidget<UUserWidget>(this, MenuClass);
+	if (!Menu) return;
+
+	Menu->AddToViewport();
+
+	// 플레이어 컨트롤러 받아오기
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+	if (!PlayerController) return;
+
+	FInputModeUIOnly InputModeData;
+	// 사용자 입력이 메뉴 위젯으로 집중되도록 설정
+	InputModeData.SetWidgetToFocus(Menu->TakeWidget());
+	// 마우스를 뷰포트에 잠그지 않도록 지정
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+
+	// 위에서 만든 Data를 PlayerController에 적용하기
+	PlayerController->SetInputMode(InputModeData);
+
+	// 마우스 커서가 보이도록 설정
+	PlayerController->bShowMouseCursor = true;
 }
 
 void UPuzzlePlatformsGameInstance::Host()

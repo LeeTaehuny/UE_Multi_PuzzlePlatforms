@@ -21,9 +21,16 @@ public:
 
 public:
 	// 콘솔에서 사용하기 위한 함수 선언
+	UFUNCTION(BlueprintCallable)
+	void LoadMenu();
+
 	UFUNCTION(Exec)
 	void Host();
 
 	UFUNCTION(Exec)
 	void Join(const FString& Address);
+
+private:
+	UPROPERTY()
+	TSubclassOf<UUserWidget> MenuClass;
 };
